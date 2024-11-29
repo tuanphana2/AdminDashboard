@@ -1,0 +1,93 @@
+﻿@model IEnumerable<AdminDashboard.Models.User>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h2 class="mb-4">Manage Users</h2>
+<a href="@Url.Action("Create", "User")" class="btn btn-primary mb-3">
+    <i class="bi bi-person-plus"></i> Add New User
+</a>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Login Status</th>
+                <th scope="col" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <span class="badge bg-@(user.ActiveBlock ? "danger" : "success")">
+                            @(user.ActiveBlock ? "Block" : "Active")
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <form asp-action="ToggleLoginStatus" method="post" class="d-inline">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button type="submit" class="btn btn-@(user.ActiveBlock ? "success" : "secondary") btn-sm">
+                                <i class="bi bi-toggle-@(user.ActiveBlock ? "on" : "off")"></i>
+                                @(user.ActiveBlock ? "Unblock" : "Block")
+                            </button>
+                        </form>
+                        <a href="@Url.Action("Edit", "User", new { id = user.Id })" class="btn btn-warning btn-sm me-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="@Url.Action("Delete", "User", new { id = user.Id })" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Styles {
+    <style>
+        .table-responsive {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn-close {
+            float: right;
+            font-size: 1.2em;
+            color: #000;
+        }
+        .alert-dismissible .btn-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+}

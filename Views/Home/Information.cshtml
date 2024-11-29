@@ -1,0 +1,26 @@
+﻿@model AdminDashboard.Models.Admin
+
+<div class="container mt-4">
+    <h2 class="text-primary">Admin Details</h2>
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">@Model.Name</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="@Model.Image" alt="Admin Image" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+                </div>
+                <div class="col-md-8">
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Phone:</strong> @Model.Phone</p>
+                    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    <p><strong>Updated At:</strong> @Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit Profile</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>

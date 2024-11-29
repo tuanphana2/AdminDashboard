@@ -1,0 +1,53 @@
+﻿@model AdminDashboard.Models.Login
+
+@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="login shadow p-4 rounded bg-white">
+                <h2 class="text-center mb-4">Admin Login</h2>
+                <form asp-action="Login" method="post">
+                    <label asp-for="Username" class="form-label">Username</label>
+                    <input asp-for="Username" class="form-control" placeholder="Enter username" required />
+
+                    <label asp-for="Password" class="form-label mt-3">Password</label>
+                    <input asp-for="Password" class="form-control" type="password" placeholder="Enter password" required />
+
+                    <button type="submit" class="btn btn-primary w-100 mt-4">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @TempData["ErrorMessage"]
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @TempData["SuccessMessage"]
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

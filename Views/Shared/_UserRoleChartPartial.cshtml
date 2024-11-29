@@ -1,0 +1,34 @@
+﻿@using Newtonsoft.Json
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-4">
+    <h3 class="text-center">User Role Statistics</h3>
+    <canvas id="userRoleChart"></canvas>
+</div>
+
+<script>
+    const attendeesCount = @(@ViewBag.AttendeesCount ?? 0);
+    const organizersCount = @(@ViewBag.OrganizersCount ?? 0);
+
+    const ctxUserRoleChart = document.getElementById('userRoleChart').getContext('2d');
+    const userRoleChart = new Chart(ctxUserRoleChart, {
+        type: 'pie',
+        data: {
+            labels: ['Attendees', 'Organizers'],
+            datasets: [{
+                label: 'User Roles',
+                data: [attendeesCount, organizersCount],
+                backgroundColor: ['#36A2EB', '#FF6384'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+</script>

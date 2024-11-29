@@ -1,0 +1,65 @@
+﻿@model IEnumerable<AdminDashboard.Models.Event>
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">Manage Events</h2>
+    <a href="@Url.Action("Create", "Event")" class="btn btn-success mb-3">+ Add New Event</a>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Organizer</th>
+                <th style="width: 150px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evnt in Model)
+            {
+                <tr>
+                    <td>@evnt.Title</td>
+                    <td>@evnt.Date.ToShortDateString()</td>
+                    <td>@evnt.Location</td>
+                    <td>@evnt.Organizer</td>
+                    <td>
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Edit", "Event", new { id = evnt.Id })" class="btn btn-warning btn-sm me-2">Edit</a>
+                            <a href="@Url.Action("Delete", "Event", new { id = evnt.Id })" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Styles {
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        .btn-success {
+            font-size: 1rem;
+            padding: 0.5rem 1.25rem;
+        }
+        .table {
+            font-size: 0.95rem;
+            border: 1px solid #dee2e6;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .btn-sm {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+        }
+    </style>
+}

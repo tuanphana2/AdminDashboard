@@ -1,0 +1,51 @@
+﻿@using Newtonsoft.Json
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-4">
+    <h3 class="text-center">Category Event Statistics</h3>
+    <canvas id="categoryEventChart"></canvas>
+</div>
+
+<script>
+    var categoryNames = @Html.Raw(JsonConvert.SerializeObject(ViewBag.CategoryNames)) || [];
+    var eventCounts = @Html.Raw(JsonConvert.SerializeObject(ViewBag.EventCounts)) || [];
+
+    if (Array.isArray(categoryNames) && Array.isArray(eventCounts) && categoryNames.length === eventCounts.length) {
+        var ctxCategoryChart = document.getElementById('categoryEventChart').getContext('2d');
+        var categoryChart = new Chart(ctxCategoryChart, {
+            type: 'bar',
+            data: {
+                labels: categoryNames,
+                datasets: [{
+                    label: 'Number of Events',
+                    data: eventCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: false,
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    } else {
+        console.error('Invalid data. Check ViewBag.CategoryNames and ViewBag.EventCounts.');
+    }
+</script>

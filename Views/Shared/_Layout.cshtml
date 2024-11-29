@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AdminDashboard</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-jLKHWMqH/Y0fhSTz+hO/8Xl7r3f39j5z8t3kT+wAa58kYw5AWU78zwxuh207VvY3" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <header class="bg-light shadow-sm py-2 d-flex align-items-center">
+        <button id="sidebarToggle" class="btn btn-outline-secondary ms-2 me-3">☰</button>
+        <a class="navbar-brand fw-bold text-primary ms-2" asp-controller="Home" asp-action="Index">AdminDashboard</a>
+        <div class="ms-auto">
+            <a class="nav-link d-inline text-secondary me-3" asp-controller="Home" asp-action="Information">Admin</a>
+            <a class="nav-link d-inline text-secondary" href="http://localhost:5230/">Logout</a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <nav id="sidebar" class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-home"></i><span class="link-text ms-2">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="User" asp-action="Index">
+                        <i class="fas fa-user-shield"></i><span class="link-text ms-2">Manage Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Event" asp-action="Index">
+                        <i class="fas fa-user-shield"></i><span class="link-text ms-2">Manage Event</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="CategoryEvent" asp-action="Index">
+                        <i class="fas fa-tags"></i><span class="link-text ms-2">Manage Event Categories</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Notification" asp-action="Index">
+                        <i class="fas fa-poll"></i><span class="link-text ms-2">Notifications</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Privacy">
+                        <i class="fas fa-info-circle"></i><span class="link-text ms-2">Privacy</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            &copy; @DateTime.Now.Year - AdminDashboard - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("sidebarToggle").addEventListener("click", function () {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+
+            const linkTexts = document.querySelectorAll("#sidebar .link-text");
+            linkTexts.forEach(text => text.classList.toggle("d-none"));
+        });
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
