@@ -1,6 +1,7 @@
 ﻿using AdminDashboard.Models;
 using AdminDashboard.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Threading.Tasks;
@@ -20,18 +21,40 @@ namespace AdminDashboard.Controllers
             _categoryEventRepository = categoryEventRepository;
         }
 
-        // Hiển thị danh sách sự kiện
-        public async Task<IActionResult> Index()
+        // Hiển thị danh sách sự kiện (có thể có tìm kiếm)
+        public async Task<IActionResult> Index(string searchQuery, int page = 1)
         {
-            var events = await _eventRepository.GetAllAsync();
-            return View(events);
+            int pageSize = 10; // Adjust based on your needs
+
+            // Fetch all events and filter by search query (Title or Location)
+            var events = await _eventRepository.GetAllAsync(); // Assuming GetAllEventsAsync fetches all events
+
+            // Apply filtering if searchQuery is provided
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                events = events.Where(e => e.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                                            e.Location.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Pagination logic
+            var totalEvents = events.Count();
+            var totalPages = (int)Math.Ceiling(totalEvents / (double)pageSize);
+            var pagedEvents = events.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Set up pagination in ViewData
+            ViewData["SearchQuery"] = searchQuery;
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["PreviousPage"] = page > 1 ? page - 1 : 1;
+            ViewData["NextPage"] = page < totalPages ? page + 1 : totalPages;
+
+            return View(pagedEvents);
         }
 
         // Hiển thị trang tạo sự kiện mới
         public async Task<IActionResult> Create()
         {
-            ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-            ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+            await SetUpViewBags();
             return View();
         }
 
@@ -43,8 +66,7 @@ namespace AdminDashboard.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Invalid data provided. Please correct the errors and try again.";
-                ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-                ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+                await SetUpViewBags();
                 return View(evnt);
             }
 
@@ -60,8 +82,7 @@ namespace AdminDashboard.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error creating event: {ex.Message}";
-                ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-                ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+                await SetUpViewBags();
                 return View(evnt);
             }
         }
@@ -76,8 +97,7 @@ namespace AdminDashboard.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-            ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+            await SetUpViewBags();
             return View(evnt);
         }
 
@@ -95,8 +115,7 @@ namespace AdminDashboard.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Invalid data provided. Please correct the errors and try again.";
-                ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-                ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+                await SetUpViewBags();
                 return View(evnt);
             }
 
@@ -111,8 +130,7 @@ namespace AdminDashboard.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error updating event: {ex.Message}";
-                ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-                ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+                await SetUpViewBags();
                 return View(evnt);
             }
         }
@@ -134,12 +152,6 @@ namespace AdminDashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                TempData["ErrorMessage"] = "Event ID is missing. Unable to delete the event.";
-                return RedirectToAction(nameof(Index));
-            }
-
             try
             {
                 await _eventRepository.DeleteAsync(id);
@@ -151,6 +163,13 @@ namespace AdminDashboard.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // Phương thức này thiết lập các ViewBag cho các tổ chức và danh mục
+        private async Task SetUpViewBags()
+        {
+            ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
+            ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
         }
     }
 }

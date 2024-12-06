@@ -17,6 +17,17 @@
 }
 
 <h2 class="mb-4">Manage Users</h2>
+
+<!-- Search Form -->
+<form method="get" action="@Url.Action("Index", "User")" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Search by Username or Email..." value="@ViewData["SearchQuery"]" />
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
 <a href="@Url.Action("Create", "User")" class="btn btn-primary mb-3">
     <i class="bi bi-person-plus"></i> Add New User
 </a>
@@ -25,10 +36,10 @@
     <table class="table table-hover align-middle table-bordered table-striped">
         <thead class="table-dark">
             <tr>
-                <th scope="col">Username</th>
+                <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Role</th>
-                <th scope="col">Login Status</th>
+                <th scope="col">Status</th>
                 <th scope="col" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -41,7 +52,7 @@
                     <td>@user.Role</td>
                     <td>
                         <span class="badge bg-@(user.ActiveBlock ? "danger" : "success")">
-                            @(user.ActiveBlock ? "Block" : "Active")
+                            @(user.ActiveBlock ? "Blocked" : "Active")
                         </span>
                     </td>
                     <td class="text-center">
@@ -65,6 +76,19 @@
     </table>
 </div>
 
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-between mt-3">
+    <div>
+        <a href="@Url.Action("Index", "User", new { page = 1, searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">First</a>
+        <a href="@Url.Action("Index", "User", new { page = ViewData["PreviousPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Previous</a>
+        <a href="@Url.Action("Index", "User", new { page = ViewData["NextPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Next</a>
+        <a href="@Url.Action("Index", "User", new { page = ViewData["TotalPages"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Last</a>
+    </div>
+    <div>
+        <span>Page @ViewData["CurrentPage"] of @ViewData["TotalPages"]</span>
+    </div>
+</div>
+
 @section Styles {
     <style>
         .table-responsive {
@@ -72,18 +96,43 @@
             border-radius: 10px;
             overflow: hidden;
         }
+
         .table th, .table td {
             vertical-align: middle;
         }
+
         .btn-close {
             float: right;
             font-size: 1.2em;
             color: #000;
         }
+
         .alert-dismissible .btn-close {
             position: absolute;
             top: 0.75rem;
             right: 1rem;
+        }
+
+        .input-group {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+            .input-group input {
+                max-width: 80%;
+            }
+
+            .input-group button {
+                width: 20%;
+            }
+
+        .btn-sm {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.85rem;
         }
     </style>
 }

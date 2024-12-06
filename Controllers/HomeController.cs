@@ -1,6 +1,5 @@
 ﻿using AdminDashboard.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AdminDashboard.Controllers
@@ -25,10 +24,17 @@ namespace AdminDashboard.Controllers
             var attendeesCount = await _userRepository.GetCountByRoleAsync("attendee");
             var organizersCount = await _userRepository.GetCountByRoleAsync("organizer");
 
+            // Lấy số lượng người dùng mới trong 3 tháng qua
+            var recentUserCount = await _userRepository.GetUserCountByRecentAsync();
+            // Lấy số lượng sự kiện trong tháng
+            var eventCountThisMonth = await _eventRepository.GetEventCountThisMonthAsync();
             // Lấy dữ liệu cho biểu đồ cột
             var eventCountsByCategory = await _categoryEventRepository.GetEventCountByCategoryAsync(_eventRepository.GetCollection());
 
+            // Truyền các giá trị vào ViewData
             ViewData["UserCount"] = userCount;
+            ViewData["RecentUserCount"] = recentUserCount;
+            ViewData["EventCountThisMonth"] = eventCountThisMonth;
             ViewData["CategoryCount"] = categoryCount;
             ViewBag.AttendeesCount = attendeesCount;
             ViewBag.OrganizersCount = organizersCount;

@@ -18,10 +18,33 @@ namespace AdminDashboard.Controllers
         }
 
         // Hiển thị danh sách người dùng
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchQuery, int page = 1)
         {
-            var users = await _userRepository.GetAllAsync();
-            return View(users);
+            int pageSize = 10; // Adjust based on your needs
+
+            // Fetch all users
+            var users = await _userRepository.GetAllAsync(); // Assuming GetAllUsersAsync fetches all users
+
+            // Apply filtering if searchQuery is provided
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                users = users.Where(u => u.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                                          u.Email.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Pagination logic
+            var totalUsers = users.Count();
+            var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+            var pagedUsers = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Set up pagination in ViewData
+            ViewData["SearchQuery"] = searchQuery;
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["PreviousPage"] = page > 1 ? page - 1 : 1;
+            ViewData["NextPage"] = page < totalPages ? page + 1 : totalPages;
+
+            return View(pagedUsers);
         }
 
         // Hiển thị trang tạo người dùng mới

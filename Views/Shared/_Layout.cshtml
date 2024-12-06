@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-jLKHWMqH/Y0fhSTz+hO/8Xl7r3f39j5z8t3kT+wAa58kYw5AWU78zwxuh207VvY3" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -18,10 +19,17 @@
     <header class="bg-light shadow-sm py-2 d-flex align-items-center">
         <button id="sidebarToggle" class="btn btn-outline-secondary ms-2 me-3">☰</button>
         <a class="navbar-brand fw-bold text-primary ms-2" asp-controller="Home" asp-action="Index">AdminDashboard</a>
-        <div class="ms-auto">
-            <a class="nav-link d-inline text-secondary me-3" asp-controller="Home" asp-action="Information">Admin</a>
-            <a class="nav-link d-inline text-secondary" href="http://localhost:5230/">Logout</a>
+
+        <div class="ms-auto d-flex align-items-center">
+            <form method="post" asp-controller="Admin" asp-action="Information" class="me-2">
+                <button type="submit" class="btn">Admin</button>
+            </form>
+
+            <form method="post" asp-controller="Admin" asp-action="Logout">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
         </div>
+
     </header>
 
     <div class="content-wrapper">
@@ -83,6 +91,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

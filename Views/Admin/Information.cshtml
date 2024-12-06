@@ -13,13 +13,11 @@
                 <div class="col-md-8">
                     <p><strong>Email:</strong> @Model.Email</p>
                     <p><strong>Phone:</strong> @Model.Phone</p>
-                    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
-                    <p><strong>Updated At:</strong> @Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    <a href="@Url.Action("Edit", "Admin", new { id = Model.Id })" class="btn btn-warning">Edit Info</a>
+                    <a href="@Url.Action("ChangePassword", "Admin", new { id = Model.Id })" class="btn btn-primary">Change Password</a>
+                    <hr />
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to home</a>
                 </div>
-            </div>
-            <div class="mt-4">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit Profile</a>
-                <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
             </div>
         </div>
     </div>

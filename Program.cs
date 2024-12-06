@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using AdminDashboard.Models;
 using AdminDashboard.Repositories;
 using AdminDashboard.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,28 @@ builder.Services.AddSingleton(sp =>
     return mongoClient.GetDatabase(settings.DatabaseName);
 });
 
+builder.Services.AddDistributedMemoryCache(); // Dùng bộ nhớ để lưu trữ Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn của session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; // Đảm bảo session hoạt động ngay cả khi không có cookie
+});
+
+builder.Services.AddControllersWithViews();
+
+// Cấu hình dịch vụ xác thực cookie
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login/Login"; // Đường dẫn đăng nhập
+        options.LogoutPath = "/Login/Logout"; // Đường dẫn đăng xuất
+        options.AccessDeniedPath = "/Home/AccessDenied"; // Đường dẫn truy cập bị từ chối
+    });
+
+// Cấu hình MVC cho ứng dụng
+builder.Services.AddControllersWithViews();
+
 // Đăng ký UserRepository và EventRepository
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<EventRepository>();
@@ -49,6 +72,9 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // Cấu hình pipeline xử lý yêu cầu
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseStaticFiles(); // Đảm bảo các tệp tĩnh như CSS, JS, hình ảnh có thể được tải
 app.UseRouting();
 

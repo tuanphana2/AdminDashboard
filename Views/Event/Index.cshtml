@@ -2,6 +2,15 @@
 
 <div class="container mt-4">
     <h2 class="text-primary mb-4">Manage Events</h2>
+
+    <!-- Thanh tìm kiếm -->
+    <form method="get" action="@Url.Action("Index", "Event")" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="searchQuery" class="form-control" placeholder="Search events..." value="@ViewData["SearchQuery"]" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
     <a href="@Url.Action("Create", "Event")" class="btn btn-success mb-3">+ Add New Event</a>
 
     <table class="table table-hover table-bordered">
@@ -32,6 +41,22 @@
             }
         </tbody>
     </table>
+
+    <!-- Phân trang (pagination) -->
+    <div class="d-flex justify-content-between">
+        <div>
+            @if (Model.Any())
+            {
+                <a href="@Url.Action("Index", "Event", new { page = 1, searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">First</a>
+                <a href="@Url.Action("Index", "Event", new { page = @ViewData["PreviousPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Previous</a>
+                <a href="@Url.Action("Index", "Event", new { page = @ViewData["NextPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Next</a>
+                <a href="@Url.Action("Index", "Event", new { page = @ViewData["TotalPages"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Last</a>
+            }
+        </div>
+        <div>
+            <span>Page @ViewData["CurrentPage"] of @ViewData["TotalPages"]</span>
+        </div>
+    </div>
 </div>
 
 @section Styles {
@@ -39,27 +64,46 @@
         .container {
             max-width: 800px;
         }
+
         h2 {
             font-size: 1.75rem;
             font-weight: 600;
         }
+
         .btn-success {
             font-size: 1rem;
             padding: 0.5rem 1.25rem;
         }
+
         .table {
             font-size: 0.95rem;
             border: 1px solid #dee2e6;
         }
-        .table th, .table td {
-            vertical-align: middle;
-        }
+
+            .table th, .table td {
+                vertical-align: middle;
+            }
+
         .table-hover tbody tr:hover {
             background-color: #f8f9fa;
         }
+
         .btn-sm {
             font-size: 0.85rem;
             padding: 0.25rem 0.75rem;
         }
+
+        .input-group {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+            .input-group input {
+                max-width: 80%;
+            }
+
+            .input-group button {
+                width: 20%;
+            }
     </style>
 }

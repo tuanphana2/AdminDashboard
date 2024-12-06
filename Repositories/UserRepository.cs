@@ -61,5 +61,13 @@ namespace AdminDashboard.Repositories
             var count = await _users.CountDocumentsAsync(user => user.Role == role);
             return (int)count;
         }
+
+        // Lấy số lượng người dùng được tạo trong 3 tháng qua
+        public async Task<int> GetUserCountByRecentAsync()
+        {
+            var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3);
+            var count = await _users.CountDocumentsAsync(user => user.CreatedAt >= threeMonthsAgo);
+            return (int)count;
+        }
     }
 }

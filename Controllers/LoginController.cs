@@ -26,26 +26,36 @@ namespace AdminDashboard.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Login model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Invalid login attempt.");
-                return View(model);
+                // Xác thực người dùng qua email và mật khẩu
+                var admin = await _adminRepository.AuthenticateAdminAsync(model.Email, model.Password);
+
+                if (admin != null)
+                {
+                    // Lưu thông tin vào session
+                    HttpContext.Session.SetString("AdminEmail", admin.Email);
+
+                    // Chuyển hướng đến trang thông tin
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    // Thêm thông báo lỗi nếu đăng nhập thất bại
+                    ModelState.AddModelError(string.Empty, "Wrong Email or Password!");
+                }
             }
 
-            var admin = await _adminRepository.GetAdminByUsernameAsync(model.Username);
-            if (admin == null || admin.Password != model.Password) // Ensure password hashing is implemented in production
-            {
-                ModelState.AddModelError("", "Invalid username or password.");
-                return View(model);
-            }
-
-            return RedirectToAction("Index", "Home"); // Redirect to admin dashboard
+            // Nếu đăng nhập thất bại, hiển thị lại form đăng nhập với lỗi
+            return View(model);
         }
 
+        // Trang đăng xuất
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
+            HttpContext.Session.Clear();  // Xóa Session
+            return RedirectToAction("Login");
         }
     }
 }
