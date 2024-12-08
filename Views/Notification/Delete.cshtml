@@ -1,0 +1,15 @@
+﻿@model AdminDashboard.Models.Notification
+
+@{
+    ViewData["Title"] = "Delete Notification";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>Are you sure you want to delete the notification "<strong>@Model.Title</strong>"?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+</form>

@@ -4,6 +4,7 @@ using AdminDashboard.Models;
 using AdminDashboard.Repositories;
 using AdminDashboard.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using AdminDashboard.Services; // Thêm namespace chứa WebSocket services
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,8 @@ builder.Services.AddSingleton(sp =>
     return mongoClient.GetDatabase(settings.DatabaseName);
 });
 
-builder.Services.AddDistributedMemoryCache(); // Dùng bộ nhớ để lưu trữ Session
+// Cấu hình bộ nhớ lưu trữ session
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn của session
@@ -45,39 +47,58 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // Đảm bảo session hoạt động ngay cả khi không có cookie
 });
 
-builder.Services.AddControllersWithViews();
-
 // Cấu hình dịch vụ xác thực cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login/Login"; // Đường dẫn đăng nhập
-        options.LogoutPath = "/Login/Logout"; // Đường dẫn đăng xuất
-        options.AccessDeniedPath = "/Home/AccessDenied"; // Đường dẫn truy cập bị từ chối
+        options.LoginPath = "/Login/Login";
+        options.LogoutPath = "/Login/Logout";
+        options.AccessDeniedPath = "/Home/AccessDenied";
     });
 
-// Cấu hình MVC cho ứng dụng
-builder.Services.AddControllersWithViews();
+// Đăng ký MongoDbContext
+builder.Services.AddScoped<MongoDbContext>();
 
-// Đăng ký UserRepository và EventRepository
+// Đăng ký các Repository và Services
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<EventRepository>();
 builder.Services.AddScoped<CategoryEventRepository>();
 builder.Services.AddScoped<AdminRepository>();
-//builder.Services.AddScoped<NotificationRepository>();
+builder.Services.AddScoped<NotificationService>();
 
-// Thêm dịch vụ MVC cho các trang và API
+// Đăng ký các dịch vụ WebSocket
+builder.Services.AddSingleton<WebSocketConnectionManager>();
+//builder.Services.AddSingleton<WebSocketMessageService>();
+//builder.Services.AddSingleton<WebSocketHandler>();
+
+// Đăng ký các dịch vụ MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Cấu hình pipeline xử lý yêu cầu
+// Cấu hình middleware WebSocket
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles(); // Đảm bảo các tệp tĩnh như CSS, JS, hình ảnh có thể được tải
 app.UseRouting();
 
+// Cấu hình WebSocket endpoint
+app.Map("/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        //var webSocketHandler = app.Services.GetRequiredService<WebSocketHandler>();
+        //await webSocketHandler.HandleWebSocketConnectionAsync(context, webSocket);
+    }
+    else
+    {
+        context.Response.StatusCode = 400; // Bad Request nếu không phải WebSocket
+    }
+});
+
+// Cấu hình các route controller khác
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Login}/{id?}");
