@@ -69,5 +69,12 @@ namespace AdminDashboard.Repositories
             var count = await _users.CountDocumentsAsync(user => user.CreatedAt >= threeMonthsAgo);
             return (int)count;
         }
+
+        // Đếm tất cả các người dùng
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return (int)await _users.CountDocumentsAsync(FilterDefinition<User>.Empty);
+        }
+
     }
 }

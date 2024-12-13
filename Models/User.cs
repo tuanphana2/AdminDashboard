@@ -42,7 +42,7 @@ namespace AdminDashboard.Models
         public bool ActiveSpeaker { get; set; } = false;
 
         [BsonElement("activeBlock")]
-        public bool ActiveBlock { get; set; } = true;
+        public bool ActiveBlock { get; set; } = false;
 
         [BsonElement("token")]
         public List<string> Token { get; set; } = new List<string>();

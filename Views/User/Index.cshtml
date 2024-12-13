@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<AdminDashboard.Models.User>
+@{
+    var currentPage = ViewData["CurrentPage"] ?? 1;
+    var totalPages = ViewData["TotalPages"] ?? 1;
+}
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -79,13 +83,15 @@
 <!-- Pagination Controls -->
 <div class="d-flex justify-content-between mt-3">
     <div>
-        <a href="@Url.Action("Index", "User", new { page = 1, searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">First</a>
-        <a href="@Url.Action("Index", "User", new { page = ViewData["PreviousPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Previous</a>
-        <a href="@Url.Action("Index", "User", new { page = ViewData["NextPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Next</a>
-        <a href="@Url.Action("Index", "User", new { page = ViewData["TotalPages"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Last</a>
+        <a href="@Url.Action("Index", "User", new { page = 1, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">First</a>
+        <a href="@Url.Action("Index", "User", new { page = (int)currentPage - 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == 1 ? "disabled" : "")">Previous</a>
+        <a href="@Url.Action("Index", "User", new { page = (int)currentPage + 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == (int)totalPages ? "disabled" : "")">Next</a>
+        <a href="@Url.Action("Index", "User", new { page = totalPages, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">Last</a>
     </div>
-    <div>
-        <span>Page @ViewData["CurrentPage"] of @ViewData["TotalPages"]</span>
+    <div class="text-end">
+        <span>Page @currentPage of @totalPages</span>
     </div>
 </div>
 
@@ -99,6 +105,7 @@
 
         .table th, .table td {
             vertical-align: middle;
+            font-size: 0.95rem; /* Đồng bộ kích thước chữ trong bảng */
         }
 
         .btn-close {
@@ -127,12 +134,35 @@
             }
 
         .btn-sm {
-            font-size: 0.85rem;
+            font-size: 0.85rem; /* Đồng bộ kích thước nút */
             padding: 0.25rem 0.75rem;
         }
 
         .badge {
-            font-size: 0.85rem;
+            font-size: 0.85rem; /* Đồng bộ kích thước badge */
+        }
+
+        h2 {
+            font-size: 1.75rem; /* Đồng bộ kích thước tiêu đề */
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .table {
+            font-size: 0.95rem; /* Đồng bộ kích thước font trong bảng */
+            border: 1px solid #dee2e6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .text-end {
+            font-size: 0.9rem;
         }
     </style>
 }

@@ -3,11 +3,11 @@
 <div class="container mt-4">
     <h2 class="text-primary mb-4">Edit Event</h2>
 
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" method="post" class="p-4 border rounded shadow-sm">
         <input type="hidden" asp-for="Id" />
 
         <div class="form-group mb-3">
-            <label asp-for="Title" class="form-label"></label>
+            <label asp-for="Title" class="form-label">Event Title</label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
@@ -21,37 +21,38 @@
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Date" class="form-label"></label>
+            <label asp-for="Date" class="form-label">Event Date</label>
             <input asp-for="Date" class="form-control" type="date" />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Location" class="form-label"></label>
+            <label asp-for="Location" class="form-label">Location</label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Image" class="form-label"></label>
-            <input asp-for="Image" class="form-control" type="text" />
+            <label asp-for="Image" class="form-label">Image URL</label>
+            <input asp-for="Image" class="form-control" type="text" placeholder="e.g., https://example.com/image.jpg" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label for="CategoryId">Category</label>
+        <div class="form-group mb-3">
+            <label for="CategoryId" class="form-label">Category</label>
             <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
                 <option value="">Select Category</option>
             </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
 
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3 justify-content-end">
             <button type="submit" class="btn btn-primary px-4">Save Changes</button>
             <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
         </div>
@@ -59,29 +60,55 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
 
 @section Styles {
     <style>
         .container {
-            max-width: 700px;
+            max-width: 800px;
         }
 
         h2 {
-            font-size: 1.75rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .form-label {
             font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 0.5rem 1rem;
         }
 
         .btn {
             font-size: 1rem;
-            padding: 0.5rem 1.5rem;
+            padding: 0.6rem 1.5rem;
         }
 
-        .form-label {
-            font-weight: 500;
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+        }
+
+        .d-flex .btn {
+            margin-top: 20px;
         }
     </style>
 }

@@ -22,6 +22,29 @@ namespace AdminDashboard.Repositories
             return await _categories.Find(_ => true).ToListAsync();
         }
 
+        // Lấy danh mục sự kiện với phân trang và tìm kiếm
+        public async Task<(List<CategoryEvent> categories, int total)> GetCategoriesByPageAsync(int page, int itemsPerPage, string searchQuery)
+        {
+            var filter = Builders<CategoryEvent>.Filter.Empty;
+
+            // Nếu có tìm kiếm, lọc theo tên danh mục
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                filter = Builders<CategoryEvent>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(searchQuery, "i"));
+            }
+
+            // Đếm tổng số danh mục sự kiện
+            var totalCategories = await _categories.CountDocumentsAsync(filter);
+
+            // Lấy danh mục sự kiện theo trang và tìm kiếm
+            var categories = await _categories.Find(filter)
+                                               .Skip((page - 1) * itemsPerPage)  // Bỏ qua số mục trước trang hiện tại
+                                               .Limit(itemsPerPage)             // Giới hạn số lượng mục trên mỗi trang
+                                               .ToListAsync();
+
+            return (categories, (int)totalCategories);
+        }
+
         // Lấy một danh mục sự kiện theo ID
         public async Task<CategoryEvent> GetByIdAsync(string id)
         {
@@ -67,6 +90,8 @@ namespace AdminDashboard.Repositories
                 throw new KeyNotFoundException("CategoryEvent not found for the provided ID.");
             }
         }
+
+        // Lấy số lượng sự kiện theo mỗi danh mục sự kiện
         public async Task<Dictionary<string, int>> GetEventCountByCategoryAsync(IMongoCollection<Event> eventsCollection)
         {
             var categoryEventCounts = new Dictionary<string, int>();
@@ -74,7 +99,6 @@ namespace AdminDashboard.Repositories
 
             foreach (var category in categories)
             {
-                // Chuyển đổi category.Id từ string sang ObjectId để so sánh
                 if (ObjectId.TryParse(category.Id, out ObjectId categoryIdObject))
                 {
                     int eventCount = (int)await eventsCollection.CountDocumentsAsync(e => e.CategoryId == categoryIdObject.ToString());

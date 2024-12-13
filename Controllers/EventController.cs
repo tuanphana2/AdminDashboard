@@ -41,6 +41,8 @@ namespace AdminDashboard.Controllers
             var totalPages = (int)Math.Ceiling(totalEvents / (double)pageSize);
             var pagedEvents = events.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+            page = Math.Max(1, Math.Min(page, totalPages));
+
             // Set up pagination in ViewData
             ViewData["SearchQuery"] = searchQuery;
             ViewData["CurrentPage"] = page;

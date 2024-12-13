@@ -1,23 +1,88 @@
 ﻿@model AdminDashboard.Models.CategoryEvent
 
-<h2>Edit Category Event</h2>
+@{
+    ViewData["Title"] = "Edit Category Event";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">Name</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label">Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">Edit Category Event</h2>
+
+    <!-- Form -->
+    <form asp-action="Edit" method="post" class="p-4 border rounded shadow-sm">
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Category Name -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Category Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Category Description -->
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" placeholder="Enter category description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+            <a href="@Url.Action("Index", "CategoryEvent")" class="btn btn-secondary px-4">Cancel</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
+
+@section Styles {
+    <style>
+        .container {
+            max-width: 800px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 0.5rem 1rem;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 0.6rem 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .mb-3 {
+            margin-bottom: 1.5rem;
+        }
+
+        .d-flex .btn {
+            margin-top: 20px;
+        }
+
+        .alert {
+            font-size: 1rem;
+        }
+    </style>
 }

@@ -2,6 +2,8 @@
 using AdminDashboard.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AdminDashboard.Controllers
@@ -15,10 +17,22 @@ namespace AdminDashboard.Controllers
             _categoryEventRepository = categoryEventRepository;
         }
 
-        // Hiển thị danh sách tất cả các danh mục sự kiện
-        public async Task<IActionResult> Index()
+        // Hiển thị danh sách tất cả các danh mục sự kiện với phân trang
+        public async Task<IActionResult> Index(int page = 1, string searchQuery = "")
         {
-            var categories = await _categoryEventRepository.GetAllAsync();
+            int itemsPerPage = 10;
+
+            // Lấy danh sách và tổng số CategoryEvents, sử dụng deconstruction
+            var (categories, totalCategories) = await _categoryEventRepository.GetCategoriesByPageAsync(page, itemsPerPage, searchQuery);
+
+            int totalPages = (int)Math.Ceiling((double)totalCategories / itemsPerPage);
+
+            page = Math.Max(1, Math.Min(page, totalPages));
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["SearchQuery"] = searchQuery;
+
             return View(categories);
         }
 
@@ -73,17 +87,6 @@ namespace AdminDashboard.Controllers
         // Hiển thị trang tạo mới CategoryEvent
         public IActionResult Create()
         {
-            return View();
-        }
-
-        public async Task<IActionResult> CategoryEventChart(IMongoDatabase database)
-        {
-            var eventsCollection = database.GetCollection<Event>("Events");
-            var categoryEventCounts = await _categoryEventRepository.GetEventCountByCategoryAsync(eventsCollection);
-
-            ViewBag.CategoryNames = categoryEventCounts.Keys.ToArray();
-            ViewBag.EventCounts = categoryEventCounts.Values.ToArray();
-
             return View();
         }
 
@@ -145,6 +148,18 @@ namespace AdminDashboard.Controllers
                 TempData["ErrorMessage"] = "An error occurred while deleting the category event.";
                 return RedirectToAction("Index");
             }
+        }
+
+        // Hiển thị biểu đồ danh mục sự kiện
+        public async Task<IActionResult> CategoryEventChart(IMongoDatabase database)
+        {
+            var eventsCollection = database.GetCollection<Event>("Events");
+            var categoryEventCounts = await _categoryEventRepository.GetEventCountByCategoryAsync(eventsCollection);
+
+            ViewBag.CategoryNames = categoryEventCounts.Keys.ToArray();
+            ViewBag.EventCounts = categoryEventCounts.Values.ToArray();
+
+            return View();
         }
     }
 }

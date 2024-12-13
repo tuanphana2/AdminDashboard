@@ -23,7 +23,7 @@ namespace AdminDashboard.Controllers
             int pageSize = 10; // Adjust based on your needs
 
             // Fetch all users
-            var users = await _userRepository.GetAllAsync(); // Assuming GetAllUsersAsync fetches all users
+            var users = await _userRepository.GetAllAsync();
 
             // Apply filtering if searchQuery is provided
             if (!string.IsNullOrEmpty(searchQuery))
@@ -35,14 +35,18 @@ namespace AdminDashboard.Controllers
             // Pagination logic
             var totalUsers = users.Count();
             var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+
+            // Ensure the page is within valid range
+            page = Math.Max(1, Math.Min(page, totalPages));
+
             var pagedUsers = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Set up pagination in ViewData
             ViewData["SearchQuery"] = searchQuery;
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
-            ViewData["PreviousPage"] = page > 1 ? page - 1 : 1;
-            ViewData["NextPage"] = page < totalPages ? page + 1 : totalPages;
+            ViewData["PreviousPage"] = page > 1 ? page - 1 : 1;  // Prevent going to page 0
+            ViewData["NextPage"] = page < totalPages ? page + 1 : totalPages; // Prevent exceeding totalPages
 
             return View(pagedUsers);
         }

@@ -2,39 +2,162 @@
 
 @{
     ViewData["Title"] = "Event Categories";
+    var currentPage = ViewData["CurrentPage"] ?? 1;
+    var totalPages = ViewData["TotalPages"] ?? 1;
 }
 
-<h2>Event Categories</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<a href="@Url.Action("Create", "CategoryEvent")" class="btn btn-primary mb-3">Add New Category</a>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<table class="table table-hover table-bordered">
-    <thead>
-        <tr>
-            <th>Category Name</th>
-            <th>Description</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var category in Model)
-        {
+<h2 class="mb-4">Event Categories</h2>
+
+<!-- Search Form -->
+<form method="get" action="@Url.Action("Index", "CategoryEvent")" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Search by Category Name..." value="@ViewData["SearchQuery"]" />
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
+<a href="@Url.Action("Create", "CategoryEvent")" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-circle"></i> Add New Category
+</a>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
-                <td>@category.Name</td>
-                <td>@category.Description</td>
-                <td>@category.CreatedAt.ToString("yyyy-MM-dd")</td>
-                <td>@category.UpdatedAt.ToString("yyyy-MM-dd")</td>
-                <td class="text-center">
-                    <a href="@Url.Action("Edit", "CategoryEvent", new { id = category.Id })" class="btn btn-warning btn-sm me-1">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </a>
-                    <a href="@Url.Action("Delete", "CategoryEvent", new { id = category.Id })" class="btn btn-danger btn-sm">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </td>
+                <th scope="col">Category Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Updated At</th>
+                <th scope="col" class="text-center">Actions</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>@category.Description</td>
+                    <td>@category.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@category.UpdatedAt.ToString("yyyy-MM-dd")</td>
+                    <td class="text-center">
+                        <a href="@Url.Action("Edit", "CategoryEvent", new { id = category.Id })" class="btn btn-warning btn-sm me-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="@Url.Action("Delete", "CategoryEvent", new { id = category.Id })" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-between mt-3">
+    <div>
+        <a href="@Url.Action("Index", "CategoryEvent", new { page = 1, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">First</a>
+        <a href="@Url.Action("Index", "CategoryEvent", new { page = (int)currentPage - 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == 1 ? "disabled" : "")">Previous</a>
+        <a href="@Url.Action("Index", "CategoryEvent", new { page = (int)currentPage + 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == (int)totalPages ? "disabled" : "")">Next</a>
+        <a href="@Url.Action("Index", "CategoryEvent", new { page = totalPages, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">Last</a>
+    </div>
+    <div class="text-end">
+        <span>Page @currentPage of @totalPages</span>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table-responsive {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
         }
-    </tbody>
-</table>
+
+        .table th, .table td {
+            vertical-align: middle;
+            font-size: 0.95rem; /* Đồng bộ kích thước chữ trong bảng */
+        }
+
+        .btn-close {
+            float: right;
+            font-size: 1.2em;
+            color: #000;
+        }
+
+        .alert-dismissible .btn-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+        }
+
+        .input-group {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+            .input-group input {
+                max-width: 80%;
+            }
+
+            .input-group button {
+                width: 20%;
+            }
+
+        .btn-sm {
+            font-size: 0.85rem; /* Đồng bộ kích thước nút */
+            padding: 0.25rem 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.85rem; /* Đồng bộ kích thước badge */
+        }
+
+        h2 {
+            font-size: 1.75rem; /* Đồng bộ kích thước tiêu đề */
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .table {
+            font-size: 0.95rem; /* Đồng bộ kích thước font trong bảng */
+            border: 1px solid #dee2e6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .text-end {
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+}

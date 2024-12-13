@@ -1,26 +1,51 @@
 ﻿@model IEnumerable<AdminDashboard.Models.Event>
 
-<div class="container mt-4">
-    <h2 class="text-primary mb-4">Manage Events</h2>
+@{
+    var currentPage = ViewData["CurrentPage"] ?? 1;
+    var totalPages = ViewData["TotalPages"] ?? 1;
+}
 
-    <!-- Thanh tìm kiếm -->
-    <form method="get" action="@Url.Action("Index", "Event")" class="mb-3">
-        <div class="input-group">
-            <input type="text" name="searchQuery" class="form-control" placeholder="Search events..." value="@ViewData["SearchQuery"]" />
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-    <a href="@Url.Action("Create", "Event")" class="btn btn-success mb-3">+ Add New Event</a>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-    <table class="table table-hover table-bordered">
-        <thead class="table-light">
+<h2 class="mb-4">Manage Events</h2>
+
+<!-- Search Form -->
+<form method="get" action="@Url.Action("Index", "Event")" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Search events..." value="@ViewData["SearchQuery"]" />
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
+<a href="@Url.Action("Create", "Event")" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-circle"></i> Add New Event
+</a>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Organizer</th>
-                <th style="width: 150px;">Actions</th>
+                <th scope="col">Title</th>
+                <th scope="col">Date</th>
+                <th scope="col">Location</th>
+                <th scope="col">Organizer</th>
+                <th scope="col" class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -31,66 +56,58 @@
                     <td>@evnt.Date.ToShortDateString()</td>
                     <td>@evnt.Location</td>
                     <td>@evnt.Organizer</td>
-                    <td>
-                        <div class="d-flex justify-content-between">
-                            <a href="@Url.Action("Edit", "Event", new { id = evnt.Id })" class="btn btn-warning btn-sm me-2">Edit</a>
-                            <a href="@Url.Action("Delete", "Event", new { id = evnt.Id })" class="btn btn-danger btn-sm">Delete</a>
-                        </div>
+                    <td class="text-center">
+                        <a href="@Url.Action("Edit", "Event", new { id = evnt.Id })" class="btn btn-warning btn-sm me-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="@Url.Action("Delete", "Event", new { id = evnt.Id })" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+</div>
 
-    <!-- Phân trang (pagination) -->
-    <div class="d-flex justify-content-between">
-        <div>
-            @if (Model.Any())
-            {
-                <a href="@Url.Action("Index", "Event", new { page = 1, searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">First</a>
-                <a href="@Url.Action("Index", "Event", new { page = @ViewData["PreviousPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Previous</a>
-                <a href="@Url.Action("Index", "Event", new { page = @ViewData["NextPage"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Next</a>
-                <a href="@Url.Action("Index", "Event", new { page = @ViewData["TotalPages"], searchQuery = ViewData["SearchQuery"] })" class="btn btn-secondary btn-sm">Last</a>
-            }
-        </div>
-        <div>
-            <span>Page @ViewData["CurrentPage"] of @ViewData["TotalPages"]</span>
-        </div>
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-between mt-3">
+    <div>
+        <a href="@Url.Action("Index", "Event", new { page = 1, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">First</a>
+        <a href="@Url.Action("Index", "Event", new { page = (int)currentPage - 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == 1 ? "disabled" : "")">Previous</a>
+        <a href="@Url.Action("Index", "Event", new { page = (int)currentPage + 1, searchQuery = ViewData["SearchQuery"] ?? "" })"
+           class="btn btn-secondary btn-sm @((int)currentPage == (int)totalPages ? "disabled" : "")">Next</a>
+        <a href="@Url.Action("Index", "Event", new { page = totalPages, searchQuery = ViewData["SearchQuery"] ?? "" })" class="btn btn-secondary btn-sm">Last</a>
+    </div>
+    <div class="text-end">
+        <span>Page @currentPage of @totalPages</span>
     </div>
 </div>
 
 @section Styles {
     <style>
-        .container {
-            max-width: 800px;
+        .table-responsive {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
+        .table th, .table td {
+            vertical-align: middle;
+            font-size: 0.95rem; /* Đồng bộ kích thước chữ trong bảng */
         }
 
-        .btn-success {
-            font-size: 1rem;
-            padding: 0.5rem 1.25rem;
+        .btn-close {
+            float: right;
+            font-size: 1.2em;
+            color: #000;
         }
 
-        .table {
-            font-size: 0.95rem;
-            border: 1px solid #dee2e6;
-        }
-
-            .table th, .table td {
-                vertical-align: middle;
-            }
-
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .btn-sm {
-            font-size: 0.85rem;
-            padding: 0.25rem 0.75rem;
+        .alert-dismissible .btn-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
         }
 
         .input-group {
@@ -105,5 +122,41 @@
             .input-group button {
                 width: 20%;
             }
+
+        .btn-sm {
+            font-size: 0.85rem; /* Đồng bộ kích thước nút */
+            padding: 0.25rem 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.85rem; /* Đồng bộ kích thước badge */
+        }
+
+        h2 {
+            font-size: 1.75rem; /* Đồng bộ kích thước tiêu đề */
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .table {
+            font-size: 0.95rem; /* Đồng bộ kích thước font trong bảng */
+            border: 1px solid #dee2e6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .text-end {
+            font-size: 0.9rem;
+        }
     </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 }
