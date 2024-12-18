@@ -1,7 +1,5 @@
 ﻿using AdminDashboard.Models;
 using AdminDashboard.Repositories;
-using AdminDashboard.Hubs;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +11,13 @@ namespace AdminDashboard.Controllers
     {
         private readonly NotificationRepository _notificationRepository;
         private readonly UserRepository _userRepository;
-        private readonly IHubContext<NotificationHub> _hubContext;
 
         public NotificationController(
             NotificationRepository notificationRepository,
-            UserRepository userRepository,
-            IHubContext<NotificationHub> hubContext)
+            UserRepository userRepository)
         {
             _notificationRepository = notificationRepository;
             _userRepository = userRepository;
-            _hubContext = hubContext;
         }
 
         // GET: Create Notification
@@ -50,15 +45,10 @@ namespace AdminDashboard.Controllers
                     notification.Users = usersList;
                 }
 
-                // Lưu thông báo vào cơ sở dữ liệu
+                // Lưu thông báo vào cơ sở dữ liệu (MongoDB)
                 await _notificationRepository.AddNotificationAsync(notification);
 
-                // Gửi thông báo qua SignalR đến tất cả người dùng
-                foreach (var user in notification.Users)
-                {
-                    await _hubContext.Clients.User(user.Id).SendAsync("ReceiveNotification", notification.Title, notification.Description);
-                }
-
+                // Redirect to the Index page after saving the notification
                 return RedirectToAction("Index");
             }
 
@@ -106,12 +96,7 @@ namespace AdminDashboard.Controllers
                 var isUpdated = await _notificationRepository.UpdateNotificationAsync(id, notification);
                 if (isUpdated)
                 {
-                    // Gửi thông báo đã cập nhật tới tất cả người dùng
-                    foreach (var user in notification.Users)
-                    {
-                        await _hubContext.Clients.User(user.Id).SendAsync("ReceiveNotification", notification.Title, notification.Description);
-                    }
-
+                    // Redirect to the Index page after updating the notification
                     return RedirectToAction("Index");
                 }
 
@@ -140,22 +125,23 @@ namespace AdminDashboard.Controllers
         }
 
         // POST: Delete Notification
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var notification = await _notificationRepository.GetNotificationByIdAsync(id);
             if (notification == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Notification not found.";
+                return RedirectToAction("Index");
             }
 
-            await _notificationRepository.DeleteNotificationAsync(id);
-
-            // Gửi thông báo xóa tới tất cả người dùng
-            foreach (var user in notification.Users)
+            try
             {
-                await _hubContext.Clients.User(user.Id).SendAsync("ReceiveNotification", "Deleted Notification", "A notification has been deleted.");
+                await _notificationRepository.DeleteNotificationAsync(id);
+                TempData["SuccessMessage"] = "Notification deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred while deleting the notification: {ex.Message}";
             }
 
             return RedirectToAction("Index");

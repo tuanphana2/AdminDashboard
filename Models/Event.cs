@@ -26,14 +26,8 @@ namespace AdminDashboard.Models
         [BsonElement("location")]
         public string Location { get; set; } // Địa điểm tổ chức
 
-        [BsonElement("price")]
-        public float Price { get; set; }
-
         [BsonElement("image")]
         public string Image { get; set; } // URL hình ảnh sự kiện
-
-        [BsonElement("hasLiveStream")]
-        public bool HasLiveStream { get; set; } = false; // URL hình ảnh sự kiện
 
         [BsonElement("category_id")]
         [BsonRepresentation(BsonType.ObjectId)]

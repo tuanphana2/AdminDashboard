@@ -60,12 +60,18 @@
                         {
                             <span class="badge bg-secondary">All users</span>
                         }
+                        else if (notification.Users.Any())
+                        {
+                            <div class="d-flex flex-wrap">
+                                @foreach (var user in notification.Users)
+                                {
+                                    <span class="badge bg-info me-1 mb-1" title="@user.Name">@user.Name</span>
+                                }
+                            </div>
+                        }
                         else
                         {
-                            @foreach (var user in notification.Users)
-                            {
-                                <span class="badge bg-info">@user.Name</span>
-                            }
+                            <span class="text-muted">No recipients</span>
                         }
                     </td>
                     <td class="text-center">

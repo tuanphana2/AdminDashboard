@@ -4,10 +4,10 @@ using AdminDashboard.Models;
 using AdminDashboard.Repositories;
 using AdminDashboard.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using AdminDashboard.Hubs; // Thêm namespace cho Hubs
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +41,8 @@ builder.Services.AddSingleton(sp =>
     return mongoClient.GetDatabase(settings.DatabaseName);
 });
 
-builder.Services.AddDistributedMemoryCache(); // Dùng bộ nhớ để lưu trữ Session
+// Cấu hình Session (Sử dụng bộ nhớ để lưu trữ Session)
+builder.Services.AddDistributedMemoryCache(); // Dùng bộ nhớ để lưu trữ session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn của session
@@ -49,16 +50,19 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // Đảm bảo session hoạt động ngay cả khi không có cookie
 });
 
-// Cấu hình dịch vụ xác thực cookie
+// Cấu hình dịch vụ xác thực cookie (Authentication)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Login"; // Đường dẫn đăng nhập
         options.LogoutPath = "/Login/Logout"; // Đường dẫn đăng xuất
         options.AccessDeniedPath = "/Home/AccessDenied"; // Đường dẫn truy cập bị từ chối
+        options.Cookie.Name = "AppCookie"; // Đặt tên cookie
+        options.Cookie.SameSite = SameSiteMode.Strict; // Xác định chiến lược SameSite cookie (khuyến nghị Strict)
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Đảm bảo chỉ gửi cookie qua HTTPS
     });
 
-// Đăng ký các repository
+// Đăng ký các repository (Các lớp để truy xuất dữ liệu từ MongoDB)
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<EventRepository>();
 builder.Services.AddScoped<CategoryEventRepository>();
@@ -76,25 +80,22 @@ var app = builder.Build();
 // Cấu hình pipeline xử lý yêu cầu
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseExceptionHandler("/Home/Error"); // Xử lý lỗi trong môi trường sản xuất
+    app.UseHsts(); // Chuyển hướng tất cả yêu cầu HTTP tới HTTPS
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseHttpsRedirection(); // Tự động chuyển hướng HTTP sang HTTPS
+app.UseStaticFiles(); // Cung cấp các tệp tĩnh (JS, CSS, hình ảnh, v.v.)
+app.UseRouting(); // Định tuyến các yêu cầu đến controller hoặc endpoint
 
-app.UseRouting();
-
-app.UseSession();
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Map các endpoint SignalR Hub
-app.MapHub<NotificationHub>("/notificationHub");
+app.UseSession(); // Kích hoạt Session (đặt trước Authentication)
+app.UseAuthentication(); // Kích hoạt xác thực
+app.UseAuthorization(); // Kích hoạt phân quyền
 
 // Map các controller routes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Login}/{action=Login}/{id?}");
+    pattern: "{controller=Login}/{action=Login}/{id?}"); // Đặt controller mặc định là Login
 
+// Chạy ứng dụng
 app.Run();

@@ -24,9 +24,6 @@ namespace AdminDashboard.Models
         [BsonElement("phone")]
         public string Phone { get; set; } = string.Empty;
 
-        [BsonElement("token")]
-        public List<string> Token { get; set; } = new List<string>();
-
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
