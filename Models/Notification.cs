@@ -18,12 +18,15 @@ namespace AdminDashboard.Models
         public string Description { get; set; } // Mô tả thông báo
 
         [BsonElement("userMail")]
-        public List<User> Users { get; set; } = new List<User>(); // Danh sách người dùng nhận thông báo
+        public List<String> Emails { get; set; } = new List<String>(); // Danh sách người dùng nhận thông báo
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Ngày tạo
 
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; // Ngày cập nhật cuối
+
+        [BsonIgnoreIfDefault]
+        public int __v { get; set; }
     }
 }

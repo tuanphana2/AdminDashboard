@@ -39,10 +39,10 @@ namespace AdminDashboard.Controllers
             if (ModelState.IsValid)
             {
                 // Nếu không có người dùng cụ thể, gửi thông báo tới tất cả người dùng
-                if (notification.Users == null || !notification.Users.Any())
+                if (notification.Emails == null || !notification.Emails.Any())
                 {
-                    var usersList = await _userRepository.GetAllAsync();
-                    notification.Users = usersList;
+                    var usersList = await _userRepository.GetEmailsAsync();
+                    notification.Emails = usersList;
                 }
 
                 // Lưu thông báo vào cơ sở dữ liệu (MongoDB)
@@ -87,10 +87,10 @@ namespace AdminDashboard.Controllers
             if (ModelState.IsValid)
             {
                 // Nếu không có người dùng cụ thể, gửi thông báo tới tất cả người dùng
-                if (notification.Users == null || !notification.Users.Any())
+                if (notification.Emails == null || !notification.Emails.Any())
                 {
-                    var usersList = await _userRepository.GetAllAsync();
-                    notification.Users = usersList;
+                    var usersList = await _userRepository.GetEmailsAsync();
+                    notification.Emails = usersList;
                 }
 
                 var isUpdated = await _notificationRepository.UpdateNotificationAsync(id, notification);

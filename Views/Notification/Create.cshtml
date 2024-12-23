@@ -28,14 +28,14 @@
                 @foreach (var user in ViewBag.Users as List<AdminDashboard.Models.User>)
                 {
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="Users" value="@user.Id" id="user_@user.Id">
-                        <label class="form-check-label" for="user_@user.Id">
-                            @user.Name
+                        <input class="form-check-input" type="checkbox" name="Emails" value="@user.Email" id="user_@user.Email">
+                        <label class="form-check-label" for="user_@user.Email">
+                            @user.Name (@user.Email)
                         </label>
                     </div>
                 }
             </div>
-            <small class="form-text text-muted">Select recipients, leave empty if sending to all users.</small>
+            <small class="form-text text-muted">Select recipients by email, leave empty if sending to all users.</small>
         </div>
 
         <div class="d-flex gap-3 justify-content-end">

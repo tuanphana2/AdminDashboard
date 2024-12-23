@@ -56,16 +56,16 @@
                     <td>@notification.Description</td>
                     <td>@notification.CreatedAt.ToString("yyyy-MM-dd")</td>
                     <td>
-                        @if (notification.Users.Count == totalUsersCount)
+                        @if (notification.Emails.Count == totalUsersCount)
                         {
                             <span class="badge bg-secondary">All users</span>
                         }
-                        else if (notification.Users.Any())
+                        else if (notification.Emails.Any())
                         {
                             <div class="d-flex flex-wrap">
-                                @foreach (var user in notification.Users)
+                                @foreach (var email in notification.Emails)
                                 {
-                                    <span class="badge bg-info me-1 mb-1" title="@user.Name">@user.Name</span>
+                                    <span class="badge bg-info me-1 mb-1" title="@email">@email</span>
                                 }
                             </div>
                         }

@@ -20,3 +20,57 @@
         <a href="@Url.Action("Information", "Admin")" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+@section Styles {
+    <style>
+        .container {
+            max-width: 800px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 0.5rem 1rem;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 0.6rem 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+        }
+
+        .d-flex .btn {
+            margin-top: 20px;
+        }
+    </style>
+}

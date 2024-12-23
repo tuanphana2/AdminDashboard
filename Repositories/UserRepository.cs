@@ -76,5 +76,13 @@ namespace AdminDashboard.Repositories
             return (int)await _users.CountDocumentsAsync(FilterDefinition<User>.Empty);
         }
 
+        // Lấy danh sách email của tất cả người dùng
+        public async Task<List<string>> GetEmailsAsync()
+        {
+            var emails = await _users.Find(_ => true)
+                                     .Project(u => u.Email) // Chỉ lấy trường Email
+                                     .ToListAsync();
+            return emails;
+        }
     }
 }
