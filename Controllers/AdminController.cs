@@ -125,7 +125,6 @@ namespace AdminDashboard.Controllers
             return View(model);
         }
 
-
         // Đăng xuất, xóa thông tin Admin khỏi Session
         public IActionResult Logout()
         {

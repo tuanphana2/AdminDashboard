@@ -1,4 +1,5 @@
-﻿@model AdminDashboard.Models.Event
+﻿@using System.Globalization
+@model AdminDashboard.Models.Event
 
 <div class="container mt-4">
     <h2 class="text-primary mb-4">Create Event</h2>
@@ -12,7 +13,7 @@
 
         <div class="form-group mb-3">
             <label asp-for="Organizer" class="form-label">Organizer</label>
-            <select asp-for="Organizer" class="form-control" asp-items="ViewBag.Organizers">
+            <select asp-for="Organizer" class="form-control" asp-items="@(ViewBag.Organizers ?? new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"))">
                 <option value="">-- Select Organizer --</option>
             </select>
             <span asp-validation-for="Organizer" class="text-danger"></span>
@@ -26,7 +27,7 @@
 
         <div class="form-group mb-3">
             <label asp-for="Date" class="form-label">Event Date</label>
-            <input asp-for="Date" class="form-control" type="date" />
+            <input asp-for="Date" class="form-control" type="date" value="@Model.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
 
@@ -37,15 +38,9 @@
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Image" class="form-label">Image URL</label>
-            <input asp-for="Image" class="form-control" type="text" placeholder="e.g., https://example.com/image.jpg" />
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-3">
             <label for="CategoryId" class="form-label">Category</label>
-            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
-                <option value="">Select Category</option>
+            <select asp-for="CategoryId" class="form-control" asp-items="@(ViewBag.Categories ?? new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"))">
+                <option value="">-- Select Category --</option>
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>

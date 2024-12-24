@@ -60,17 +60,59 @@ namespace AdminDashboard.Controllers
 
         // Xử lý yêu cầu tạo người dùng mới
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(User user, string hobbiesInput)
         {
+            // Kiểm tra ModelState
             if (!ModelState.IsValid)
             {
                 ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                TempData["ErrorMessage"] = "Please correct the errors and try again.";
                 return View(user);
             }
 
-            await _userRepository.CreateAsync(user);
-            TempData["SuccessMessage"] = "User added successfully!";
-            return RedirectToAction(nameof(Index));
+            // Xử lý trường Hobbies (chuyển từ chuỗi thành danh sách)
+            if (!string.IsNullOrEmpty(hobbiesInput))
+            {
+                try
+                {
+                    user.Hobbies = hobbiesInput.Split(',')
+                                               .Select(h => h.Trim())
+                                               .Where(h => !string.IsNullOrEmpty(h)) // Bỏ qua chuỗi trống
+                                               .ToList();
+                }
+                catch (Exception ex)
+                {
+                    // Ghi log lỗi (nếu cần)
+                    TempData["ErrorMessage"] = "An error occurred while processing hobbies.";
+                    Console.WriteLine($"Error processing hobbies: {ex.Message}");
+
+                    // Truyền lại dữ liệu cần thiết và trả về View
+                    ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                    return View(user);
+                }
+            }
+            else
+            {
+                user.Hobbies = new List<string>(); // Gán danh sách rỗng nếu không có dữ liệu
+            }
+
+            try
+            {
+                // Gọi repository để lưu người dùng
+                await _userRepository.CreateAsync(user);
+
+                TempData["SuccessMessage"] = "User added successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi và xử lý
+                TempData["ErrorMessage"] = "An error occurred while saving the user.";
+                Console.WriteLine($"Error saving user: {ex.Message}");
+
+                ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                return View(user);
+            }
         }
 
         // Hiển thị trang chỉnh sửa người dùng
@@ -79,23 +121,73 @@ namespace AdminDashboard.Controllers
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null) return NotFound();
 
+            // Chuyển danh sách Hobbies thành chuỗi phân tách bằng dấu phẩy
+            ViewBag.HobbiesInput = string.Join(", ", user.Hobbies);
+
+            // Cung cấp danh sách Roles cho View
             ViewBag.Roles = new List<string> { "organizer", "attendee" };
             return View(user);
         }
 
-        // Xử lý yêu cầu cập nhật thông tin người dùng
+        // Xử lý cập nhật người dùng sau chỉnh sửa
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, User user)
+        public async Task<IActionResult> Edit(string id, User user, string hobbiesInput)
         {
+            // Kiểm tra ModelState để phát hiện lỗi trong dữ liệu nhập
             if (!ModelState.IsValid)
             {
+                // Cung cấp lại dữ liệu cần thiết nếu ModelState không hợp lệ
                 ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                ViewBag.HobbiesInput = hobbiesInput;
+                TempData["ErrorMessage"] = "Please correct the errors in the form.";
                 return View(user);
             }
 
-            await _userRepository.UpdateAsync(id, user);
-            TempData["SuccessMessage"] = "User updated successfully!";
-            return RedirectToAction(nameof(Index));
+            // Kiểm tra và xử lý hobbiesInput
+            if (!string.IsNullOrEmpty(hobbiesInput))
+            {
+                try
+                {
+                    user.Hobbies = hobbiesInput.Split(',')
+                                               .Select(h => h.Trim())
+                                               .Where(h => !string.IsNullOrEmpty(h)) // Bỏ qua các mục trống
+                                               .ToList();
+                }
+                catch (Exception ex)
+                {
+                    // Ghi log lỗi nếu xảy ra ngoại lệ
+                    TempData["ErrorMessage"] = "An error occurred while processing hobbies.";
+                    Console.WriteLine($"Error processing hobbies: {ex.Message}");
+
+                    // Truyền lại dữ liệu và trả về View
+                    ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                    ViewBag.HobbiesInput = hobbiesInput;
+                    return View(user);
+                }
+            }
+            else
+            {
+                user.Hobbies = new List<string>(); // Nếu không có hobbiesInput, gán danh sách rỗng
+            }
+
+            try
+            {
+                // Cập nhật vào MongoDB
+                await _userRepository.UpdateAsync(id, user);
+                TempData["SuccessMessage"] = "User updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi khi cập nhật vào cơ sở dữ liệu
+                TempData["ErrorMessage"] = "An error occurred while updating the user.";
+                Console.WriteLine($"Error updating user: {ex.Message}");
+
+                // Truyền lại dữ liệu và trả về View
+                ViewBag.Roles = new List<string> { "organizer", "attendee" };
+                ViewBag.HobbiesInput = hobbiesInput;
+                return View(user);
+            }
         }
 
         // Hiển thị trang xác nhận xóa người dùng

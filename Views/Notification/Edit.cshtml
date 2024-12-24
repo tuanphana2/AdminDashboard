@@ -57,11 +57,13 @@
 
             // Loop through users and display only those that match the search query
             for (var i = 0; i < users.length; i++) {
-                var userName = users[i].getElementsByTagName("label")[0].innerText.toLowerCase();
-                if (userName.indexOf(searchQuery) > -1) {
-                    users[i].style.display = ""; // Show the user if it matches the search
+                var email = users[i].getElementsByTagName("input")[0].value.toLowerCase();
+                var emailPrefix = email.split('@@')[0];
+
+                if (emailPrefix.indexOf(searchQuery) > -1) {
+                    users[i].style.display = ""; // Hiển thị nếu khớp
                 } else {
-                    users[i].style.display = "none"; // Hide the user if it does not match the search
+                    users[i].style.display = "none"; // Ẩn nếu không khớp
                 }
             }
         }

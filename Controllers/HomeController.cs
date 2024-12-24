@@ -12,7 +12,6 @@ namespace AdminDashboard.Controllers
         private readonly CategoryEventRepository _categoryEventRepository;
         private readonly EventRepository _eventRepository;
 
-        // Constructor
         public HomeController(
             UserRepository userRepository,
             CategoryEventRepository categoryEventRepository,
@@ -51,6 +50,11 @@ namespace AdminDashboard.Controllers
             ViewBag.CategoryNames = eventCountsByCategory.Keys.ToList();
             ViewBag.EventCounts = eventCountsByCategory.Values.ToList();
 
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
             return View();
         }
     }

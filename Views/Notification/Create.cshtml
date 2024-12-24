@@ -10,18 +10,18 @@
     <form method="post" class="p-4 border rounded shadow-sm">
         <div class="form-group mb-3">
             <label for="Title" class="form-label">Title:</label>
-            <input type="text" class="form-control" id="Title" name="Title" required />
+            <input type="text" class="form-control" id="Title" name="Title" value="@Model?.Title" required />
             <span class="text-danger" asp-validation-for="Title"></span>
         </div>
 
         <div class="form-group mb-3">
             <label for="Description" class="form-label">Description:</label>
-            <textarea class="form-control" id="Description" name="Description" required></textarea>
+            <textarea class="form-control" id="Description" name="Description" required>@Model?.Description</textarea>
             <span class="text-danger" asp-validation-for="Description"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label for="Users" class="form-label">Recipients:</label>
+            <label for="Emails" class="form-label">Recipients:</label>
             <input type="text" class="form-control mb-2" id="userSearch" name="searchQuery" placeholder="Search by username" />
             <button type="button" class="btn btn-info mt-2" id="searchBtn" onclick="searchUsers()">Search</button>
             <div class="mt-3" id="userListContainer">
@@ -45,24 +45,28 @@
     </form>
 </div>
 
-<script>
-    // Function to handle search functionality
-    function searchUsers() {
-        var searchQuery = document.getElementById("userSearch").value.toLowerCase();
-        var userListContainer = document.getElementById("userListContainer");
-        var users = userListContainer.getElementsByClassName("form-check");
+@section Scripts {
+    <script>
+        // Function to handle search functionality
+        function searchUsers() {
+            var searchQuery = document.getElementById("userSearch").value.toLowerCase();
+            var userListContainer = document.getElementById("userListContainer");
+            var users = userListContainer.getElementsByClassName("form-check");
 
-        // Loop through users and display only those that match the search query
-        for (var i = 0; i < users.length; i++) {
-            var userName = users[i].getElementsByTagName("label")[0].innerText.toLowerCase();
-            if (userName.indexOf(searchQuery) > -1) {
-                users[i].style.display = ""; // Show the user if it matches the search
-            } else {
-                users[i].style.display = "none"; // Hide the user if it does not match the search
+            // Loop through users and display only those that match the search query
+            for (var i = 0; i < users.length; i++) {
+                var email = users[i].getElementsByTagName("input")[0].value.toLowerCase();
+                var emailPrefix = email.split('@@')[0];
+
+                if (emailPrefix.indexOf(searchQuery) > -1) {
+                    users[i].style.display = ""; // Hiển thị nếu khớp
+                } else {
+                    users[i].style.display = "none"; // Ẩn nếu không khớp
+                }
             }
         }
-    }
-</script>
+    </script>
+}
 
 @section Styles {
     <style>

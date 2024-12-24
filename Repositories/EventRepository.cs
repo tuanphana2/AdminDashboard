@@ -64,6 +64,7 @@ namespace AdminDashboard.Repositories
         {
             evnt.CreatedAt = DateTime.UtcNow;
             evnt.UpdatedAt = DateTime.UtcNow;
+            evnt.Date = evnt.Date.AddDays(1);
             await _events.InsertOneAsync(evnt);
         }
 
@@ -72,6 +73,7 @@ namespace AdminDashboard.Repositories
         {
             var objectId = ParseObjectId(id);
             evnt.UpdatedAt = DateTime.UtcNow;
+            evnt.Date = evnt.Date.AddDays(1);
             await _events.ReplaceOneAsync(e => e.Id == objectId.ToString(), evnt);
         }
 

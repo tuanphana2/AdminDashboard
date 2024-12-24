@@ -1,6 +1,8 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.ComponentModel.DataAnnotations;
+using AdminDashboard.Attributes;
 
 namespace AdminDashboard.Models
 {
@@ -21,13 +23,15 @@ namespace AdminDashboard.Models
         public string Description { get; set; } // Mô tả sự kiện
 
         [BsonElement("date")]
+        [Required(ErrorMessage = "Event date is required.")]
+        [FutureDate(ErrorMessage = "The event date must be today or in the future.")]
         public DateTime Date { get; set; } // Ngày tổ chức sự kiện
 
         [BsonElement("location")]
         public string Location { get; set; } // Địa điểm tổ chức
 
         [BsonElement("images")]
-        public string Image { get; set; } // URL hình ảnh sự kiện
+        public string Image { get; set; } = string.Empty; // URL hình ảnh sự kiện
 
         [BsonElement("category_id")]
         [BsonRepresentation(BsonType.ObjectId)]

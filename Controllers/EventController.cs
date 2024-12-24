@@ -57,7 +57,7 @@ namespace AdminDashboard.Controllers
         public async Task<IActionResult> Create()
         {
             await SetUpViewBags();
-            return View();
+            return View(new Event());
         }
 
         // Xử lý yêu cầu tạo sự kiện mới
@@ -65,26 +65,33 @@ namespace AdminDashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Event evnt)
         {
+            // Kiểm tra dữ liệu đầu vào
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Invalid data provided. Please correct the errors and try again.";
-                await SetUpViewBags();
+                await SetUpViewBags(); // Đảm bảo dữ liệu ViewBag được thiết lập
                 return View(evnt);
             }
 
+            // Thiết lập thời gian tạo và cập nhật
             evnt.CreatedAt = DateTime.UtcNow;
             evnt.UpdatedAt = DateTime.UtcNow;
 
             try
             {
+                // Lưu sự kiện vào cơ sở dữ liệu
                 await _eventRepository.CreateAsync(evnt);
+
                 TempData["SuccessMessage"] = "Event created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error creating event: {ex.Message}";
-                await SetUpViewBags();
+                // Ghi log lỗi nếu cần thiết
+                Console.WriteLine($"Error creating event: {ex.Message}");
+
+                TempData["ErrorMessage"] = "An unexpected error occurred while creating the event. Please try again later.";
+                await SetUpViewBags(); // Đảm bảo dữ liệu ViewBag được thiết lập lại
                 return View(evnt);
             }
         }
@@ -170,8 +177,16 @@ namespace AdminDashboard.Controllers
         // Phương thức này thiết lập các ViewBag cho các tổ chức và danh mục
         private async Task SetUpViewBags()
         {
-            ViewBag.Organizers = new SelectList(await _userRepository.GetOrganizersAsync(), "Id", "Name");
-            ViewBag.Categories = new SelectList(await _categoryEventRepository.GetAllAsync(), "Id", "Name");
+            var organizers = await _userRepository.GetOrganizersAsync();
+            var categories = await _categoryEventRepository.GetAllAsync();
+
+            ViewBag.Organizers = organizers != null && organizers.Any()
+                ? new SelectList(organizers, "Id", "Name")
+                : new SelectList(new List<SelectListItem> { new SelectListItem { Text = "No Organizers Available", Value = "" } });
+
+            ViewBag.Categories = categories != null && categories.Any()
+                ? new SelectList(categories, "Id", "Name")
+                : new SelectList(new List<SelectListItem> { new SelectListItem { Text = "No Categories Available", Value = "" } });
         }
     }
 }
