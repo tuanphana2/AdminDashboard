@@ -26,7 +26,7 @@ namespace AdminDashboard.Models
         [BsonElement("location")]
         public string Location { get; set; } // Địa điểm tổ chức
 
-        [BsonElement("image")]
+        [BsonElement("images")]
         public string Image { get; set; } // URL hình ảnh sự kiện
 
         [BsonElement("category_id")]

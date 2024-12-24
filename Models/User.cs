@@ -20,6 +20,9 @@ namespace AdminDashboard.Models
         [BsonElement("password")]
         public string Password { get; set; } = string.Empty;
 
+        [BsonElement("googleId")]
+        public string GoogleId { get; set; } = string.Empty;
+
         [BsonElement("image")]
         public string Image { get; set; } = string.Empty;
 
