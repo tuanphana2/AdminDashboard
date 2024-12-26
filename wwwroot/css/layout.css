@@ -53,10 +53,13 @@
     .chart-container canvas {
         border: 1px solid #ddd;
         border-radius: 8px;
+        height: 400px;
         padding: 10px;
         background-color: #ffffff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+        
+        .chart-container canvas
 
 header, .footer {
     background-color: #f8f9fa;
