@@ -28,7 +28,6 @@
                 @foreach (var user in ViewBag.Users as List<AdminDashboard.Models.User>)
                 {
                     <div class="form-check">
-                        <!-- Lưu email thay vì Id -->
                         <input class="form-check-input" type="checkbox" name="Emails" value="@user.Email" id="user_@user.Email"
                         @(Model.Emails != null && Model.Emails.Contains(user.Email) ? "checked" : "")>
                         <label class="form-check-label" for="user_@user.Email">
@@ -49,21 +48,19 @@
 
 @section Scripts {
     <script>
-        // Function to handle search functionality
         function searchUsers() {
             var searchQuery = document.getElementById("userSearch").value.toLowerCase();
             var userListContainer = document.getElementById("userListContainer");
             var users = userListContainer.getElementsByClassName("form-check");
 
-            // Loop through users and display only those that match the search query
             for (var i = 0; i < users.length; i++) {
                 var email = users[i].getElementsByTagName("input")[0].value.toLowerCase();
                 var emailPrefix = email.split('@@')[0];
 
                 if (emailPrefix.indexOf(searchQuery) > -1) {
-                    users[i].style.display = ""; // Hiển thị nếu khớp
+                    users[i].style.display = "";
                 } else {
-                    users[i].style.display = "none"; // Ẩn nếu không khớp
+                    users[i].style.display = "none";
                 }
             }
         }
@@ -91,6 +88,15 @@
 
         .form-group {
             margin-bottom: 1.5rem;
+        }
+
+        #userListContainer {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
         }
 
         .form-check {
