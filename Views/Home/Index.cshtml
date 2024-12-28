@@ -6,21 +6,21 @@
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0" style="background-color: #f9f9f9;">
             <div class="card-body text-center">
-                <h5 class="card-title text-success fw-bold">Users Created in Last 3 Months</h5>
-                <p class="display-4 text-dark">@ViewData["RecentUserCount"]</p> <!-- Hiển thị số người dùng mới -->
-                <a href="@Url.Action("ManageLoginStatus", "User")" class="btn btn-outline-success mt-3">Manage Users</a>
+                <h5 class="card-title" style="color: darkblue; font-weight: bold;">Users Created in Last 3 Months</h5>
+                <p class="display-4" style="color: darkblue;">@ViewData["RecentUserCount"]</p>
+                <a href="@Url.Action("Index", "User")" class="btn" style="border-color: darkblue; color: darkblue; margin-top: 1rem;">Manage Users</a>
             </div>
         </div>
     </div>
 
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0" style="background-color: #f9f9f9;">
             <div class="card-body text-center">
-                <h5 class="card-title text-info fw-bold">Events This Month</h5>
-                <p class="display-4 text-dark">@ViewData["EventCountThisMonth"]</p> <!-- Hiển thị số sự kiện trong tháng -->
-                <a href="@Url.Action("Index", "Event")" class="btn btn-outline-info mt-3">Manage Events</a>
+                <h5 class="card-title" style="color: forestgreen; font-weight: bold;">Events This Month</h5>
+                <p class="display-4" style="color: forestgreen;">@ViewData["EventCountThisMonth"]</p>
+                <a href="@Url.Action("Index", "Event")" class="btn" style="border-color: forestgreen; color: forestgreen; margin-top: 1rem;">Manage Events</a>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
 
 <div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card-body" style="height: 400px; width: 400px; margin: auto">
+        <div class="card" style="height: 400px; width: 400px; margin: auto; background-color: #fff; border: 1px solid #e9ecef;">
             <div class="card shadow-sm border-0">
                 @await Html.PartialAsync("_UserRoleChartPartial")
             </div>
@@ -36,10 +36,34 @@
     </div>
 
     <div class="col-md-6 mb-4" style="flex: 2">
-        <div class="card-body" style="height: 400px; width: 717px; margin: auto; margin-right: 0">
+        <div class="card" style="height: 400px; width: 717px; margin: auto; margin-right: 0; background-color: #fff; border: 1px solid #e9ecef;">
             <div class="card shadow-sm border-0">
                 @await Html.PartialAsync("_CategoryEventChartPartial")
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .btn:hover {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+
+    .btn-outline-info:hover {
+        background-color: #17a2b8 !important;
+        color: #fff !important;
+    }
+
+    h5.card-title {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .display-4 {
+        font-weight: 700;
+    }
+</style>
