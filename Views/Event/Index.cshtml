@@ -54,7 +54,35 @@
                 <tr>
                     <td>@evnt.Title</td>
                     <td>@evnt.Date.ToShortDateString()</td>
-                    <td>@evnt.Location</td>
+                    <td>
+                        @if (evnt.Location.Length > 30)
+                        {
+                            <span>@evnt.Location.Substring(0, 30)...</span>
+                            <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#locationModal-@evnt.Id">
+                                <span class="badge bg-secondary">more</span>
+                            </button>
+                            <div class="modal fade" id="locationModal-@evnt.Id" tabindex="-1" aria-labelledby="locationModalLabel-@evnt.Id" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="locationModalLabel-@evnt.Id">Full Location</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @evnt.Location
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@evnt.Location</span>
+                        }
+                    </td>
                     <td>@evnt.Organizer</td>
                     <td class="text-center">
                         <a href="@Url.Action("Edit", "Event", new { id = evnt.Id })" class="btn btn-warning btn-sm me-1">

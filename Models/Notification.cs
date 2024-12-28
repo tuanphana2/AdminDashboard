@@ -12,19 +12,19 @@ namespace AdminDashboard.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("title")]
-        public string Title { get; set; } // Tiêu đề của thông báo
+        public string Title { get; set; }
 
         [BsonElement("message")]
-        public string Description { get; set; } // Mô tả thông báo
+        public string Description { get; set; }
 
         [BsonElement("userMail")]
-        public List<String> Emails { get; set; } = new List<String>(); // Danh sách người dùng nhận thông báo
+        public List<String> Emails { get; set; } = new List<String>();
 
         [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Ngày tạo
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonElement("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; // Ngày cập nhật cuối
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonIgnoreIfDefault]
         public int __v { get; set; }

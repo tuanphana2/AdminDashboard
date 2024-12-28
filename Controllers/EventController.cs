@@ -21,29 +21,29 @@ namespace AdminDashboard.Controllers
             _categoryEventRepository = categoryEventRepository;
         }
 
-        // Hiển thị danh sách sự kiện (có thể có tìm kiếm)
         public async Task<IActionResult> Index(string searchQuery, int page = 1)
         {
-            int pageSize = 10; // Adjust based on your needs
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            int pageSize = 10;
 
-            // Fetch all events and filter by search query (Title or Location)
-            var events = await _eventRepository.GetAllAsync(); // Assuming GetAllEventsAsync fetches all events
+            var events = await _eventRepository.GetAllAsync();
 
-            // Apply filtering if searchQuery is provided
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 events = events.Where(e => e.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
                                             e.Location.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Pagination logic
             var totalEvents = events.Count();
             var totalPages = (int)Math.Ceiling(totalEvents / (double)pageSize);
             var pagedEvents = events.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             page = Math.Max(1, Math.Min(page, totalPages));
 
-            // Set up pagination in ViewData
             ViewData["SearchQuery"] = searchQuery;
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
@@ -53,33 +53,33 @@ namespace AdminDashboard.Controllers
             return View(pagedEvents);
         }
 
-        // Hiển thị trang tạo sự kiện mới
         public async Task<IActionResult> Create()
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
             await SetUpViewBags();
             return View(new Event());
         }
 
-        // Xử lý yêu cầu tạo sự kiện mới
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Event evnt)
         {
-            // Kiểm tra dữ liệu đầu vào
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Invalid data provided. Please correct the errors and try again.";
-                await SetUpViewBags(); // Đảm bảo dữ liệu ViewBag được thiết lập
+                await SetUpViewBags();
                 return View(evnt);
             }
 
-            // Thiết lập thời gian tạo và cập nhật
             evnt.CreatedAt = DateTime.UtcNow;
             evnt.UpdatedAt = DateTime.UtcNow;
 
             try
             {
-                // Lưu sự kiện vào cơ sở dữ liệu
                 await _eventRepository.CreateAsync(evnt);
 
                 TempData["SuccessMessage"] = "Event created successfully!";
@@ -87,18 +87,21 @@ namespace AdminDashboard.Controllers
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi nếu cần thiết
                 Console.WriteLine($"Error creating event: {ex.Message}");
 
                 TempData["ErrorMessage"] = "An unexpected error occurred while creating the event. Please try again later.";
-                await SetUpViewBags(); // Đảm bảo dữ liệu ViewBag được thiết lập lại
+                await SetUpViewBags();
                 return View(evnt);
             }
         }
 
-        // Hiển thị trang chỉnh sửa sự kiện
         public async Task<IActionResult> Edit(string id)
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
             var evnt = await _eventRepository.GetByIdAsync(id);
             if (evnt == null)
             {
@@ -110,7 +113,6 @@ namespace AdminDashboard.Controllers
             return View(evnt);
         }
 
-        // Xử lý yêu cầu cập nhật sự kiện
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, Event evnt)
@@ -144,9 +146,13 @@ namespace AdminDashboard.Controllers
             }
         }
 
-        // Hiển thị trang xác nhận xóa sự kiện
         public async Task<IActionResult> Delete(string id)
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
             var evnt = await _eventRepository.GetByIdAsync(id);
             if (evnt == null)
             {
@@ -156,7 +162,6 @@ namespace AdminDashboard.Controllers
             return View(evnt);
         }
 
-        // Xử lý yêu cầu xóa sự kiện
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -174,7 +179,6 @@ namespace AdminDashboard.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Phương thức này thiết lập các ViewBag cho các tổ chức và danh mục
         private async Task SetUpViewBags()
         {
             var organizers = await _userRepository.GetOrganizersAsync();

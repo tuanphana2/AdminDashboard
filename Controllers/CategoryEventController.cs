@@ -17,12 +17,17 @@ namespace AdminDashboard.Controllers
             _categoryEventRepository = categoryEventRepository;
         }
 
-        // Hiển thị danh sách tất cả các danh mục sự kiện với phân trang
         public async Task<IActionResult> Index(int page = 1, string searchQuery = "")
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
             int itemsPerPage = 10;
 
-            // Lấy danh sách và tổng số CategoryEvents, sử dụng deconstruction
             var (categories, totalCategories) = await _categoryEventRepository.GetCategoriesByPageAsync(page, itemsPerPage, searchQuery);
 
             int totalPages = (int)Math.Ceiling((double)totalCategories / itemsPerPage);
@@ -36,9 +41,44 @@ namespace AdminDashboard.Controllers
             return View(categories);
         }
 
-        // Hiển thị trang chỉnh sửa CategoryEvent
+        public IActionResult Create()
+        {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CategoryEvent categoryEvent)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(categoryEvent);
+            }
+
+            try
+            {
+                await _categoryEventRepository.CreateAsync(categoryEvent);
+                TempData["SuccessMessage"] = "Category Event created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while creating the category event.");
+                return View(categoryEvent);
+            }
+        }
+
         public async Task<IActionResult> Edit(string id)
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
             if (string.IsNullOrEmpty(id))
             {
                 return BadRequest("Category ID is required.");
@@ -53,7 +93,6 @@ namespace AdminDashboard.Controllers
             return View(categoryEvent);
         }
 
-        // Xử lý yêu cầu cập nhật CategoryEvent
         [HttpPost]
         public async Task<IActionResult> Edit(string id, CategoryEvent categoryEvent)
         {
@@ -84,37 +123,13 @@ namespace AdminDashboard.Controllers
             }
         }
 
-        // Hiển thị trang tạo mới CategoryEvent
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // Xử lý yêu cầu tạo mới CategoryEvent
-        [HttpPost]
-        public async Task<IActionResult> Create(CategoryEvent categoryEvent)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(categoryEvent);
-            }
-
-            try
-            {
-                await _categoryEventRepository.CreateAsync(categoryEvent);
-                TempData["SuccessMessage"] = "Category Event created successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                ModelState.AddModelError(string.Empty, "An error occurred while creating the category event.");
-                return View(categoryEvent);
-            }
-        }
-
-        // Hiển thị trang xác nhận xóa CategoryEvent
         public async Task<IActionResult> Delete(string id)
         {
+            var adminEmail = HttpContext.Session.GetString("AdminEmail");
+            if (string.IsNullOrEmpty(adminEmail))
+            {
+                return RedirectToAction("Login", "Login");
+            }
             if (string.IsNullOrEmpty(id))
             {
                 return BadRequest("Category ID is required.");
@@ -129,7 +144,6 @@ namespace AdminDashboard.Controllers
             return View(categoryEvent);
         }
 
-        // Xử lý yêu cầu xóa CategoryEvent
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
@@ -150,7 +164,6 @@ namespace AdminDashboard.Controllers
             }
         }
 
-        // Hiển thị biểu đồ danh mục sự kiện
         public async Task<IActionResult> CategoryEventChart(IMongoDatabase database)
         {
             var eventsCollection = database.GetCollection<Event>("Events");

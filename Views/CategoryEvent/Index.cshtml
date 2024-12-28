@@ -54,18 +54,46 @@
             {
                 <tr>
                     <td>@category.Name</td>
-                    <td>@category.Description</td>
-                    <td>@category.CreatedAt.ToString("yyyy-MM-dd")</td>
-                    <td>@category.UpdatedAt.ToString("yyyy-MM-dd")</td>
-                    <td class="text-center">
-                        <a href="@Url.Action("Edit", "CategoryEvent", new { id = category.Id })" class="btn btn-warning btn-sm me-1">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-                        <a href="@Url.Action("Delete", "CategoryEvent", new { id = category.Id })" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Delete
-                        </a>
-                    </td>
-                </tr>
+                    <td>
+                        @if (category.Description.Length > 55)
+                            {
+                            <span>@category.Description.Substring(0, 55)...</span>
+                            <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#descriptionModal-@category.Id">
+                                <span class="badge bg-secondary">more</span>
+                            </button>
+                            <div class="modal fade" id="descriptionModal-@category.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@category.Id" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="descriptionModalLabel-@category.Id">Full Description</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @category.Description
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            else
+                            {
+                            <span>@category.Description</span>
+                            }
+                        </td>
+                        <td>@category.CreatedAt.ToString("yyyy-MM-dd")</td>
+                        <td>@category.UpdatedAt.ToString("yyyy-MM-dd")</td>
+                        <td class="text-center">
+                            <a href="@Url.Action("Edit", "CategoryEvent", new { id = category.Id })" class="btn btn-warning btn-sm me-1">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a href="@Url.Action("Delete", "CategoryEvent", new { id = category.Id })" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
             }
         </tbody>
     </table>

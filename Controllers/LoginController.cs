@@ -17,7 +17,6 @@ namespace AdminDashboard.Controllers
             _adminRepository = adminRepository;
         }
 
-        // GET: Login Page
         public IActionResult Login()
         {
             return View(new Login());
@@ -28,33 +27,28 @@ namespace AdminDashboard.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Xác thực người dùng qua email và mật khẩu
                 var admin = await _adminRepository.AuthenticateAdminAsync(model.Email, model.Password);
 
                 if (admin != null)
                 {
-                    // Lưu thông tin vào session
                     HttpContext.Session.SetString("AdminEmail", admin.Email);
 
-                    // Chuyển hướng đến trang thông tin
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    // Thêm thông báo lỗi nếu đăng nhập thất bại
-                    ModelState.AddModelError(string.Empty, "Wrong Email or Password!");
+                    TempData["ErrorMessage"] = "Login failed. Please check your email and password.";
+                    return RedirectToAction("Login");
                 }
             }
 
-            // Nếu đăng nhập thất bại, hiển thị lại form đăng nhập với lỗi
             return View(model);
         }
 
-        // Trang đăng xuất
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Clear();  // Xóa Session
+            HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
     }

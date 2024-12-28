@@ -53,19 +53,78 @@
             {
                 <tr>
                     <td>@notification.Title</td>
-                    <td>@notification.Description</td>
-                    <td>@notification.CreatedAt.ToString("yyyy-MM-dd")</td>
                     <td>
-                        @if (notification.Emails.Count == totalUsersCount)
+                        @if (notification.Description.Length > 100)
+                            {
+                            <span>@notification.Description.Substring(0, 100)...</span>
+                            <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#recipientsModal-@notification.Id">
+                                <span class="badge bg-secondary">more</span>
+                            </button>
+
+                            <div class="modal fade" id="descriptionModal-@notification.Id" tabindex="-1" aria-labelledby="descriptionModalLabel-@notification.Id" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="descriptionModalLabel-@notification.Id">Full Description</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @notification.Description
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            else
+                            {
+                            <span>@notification.Description</span>
+                            }
+                        </td>
+                        <td>@notification.CreatedAt.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            @if (notification.Emails.Count == totalUsersCount)
                         {
                             <span class="badge bg-secondary">All users</span>
                         }
                         else if (notification.Emails.Any())
                         {
                             <div class="d-flex flex-wrap">
-                                @foreach (var email in notification.Emails)
+                                @for (int i = 0; i < Math.Min(notification.Emails.Count, 4); i++)
                                 {
-                                    <span class="badge bg-info me-1 mb-1" title="@email">@email</span>
+                                    <span class="badge bg-info me-1 mb-1" title="@notification.Emails[i]">@notification.Emails[i]</span>
+                                }
+
+                                @if (notification.Emails.Count > 4)
+                                {
+                                    <span>...</span>
+                                    <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#recipientsModal-@notification.Id">
+                                        <span class="badge bg-secondary">more</span>
+                                    </button>
+
+                                    <div class="modal fade" id="recipientsModal-@notification.Id" tabindex="-1" aria-labelledby="recipientsModalLabel-@notification.Id" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="recipientsModalLabel-@notification.Id">Recipients</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-group">
+                                                        @foreach (var email in notification.Emails)
+                                                        {
+                                                            <li class="list-group-item">@email</li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
                             </div>
                         }
@@ -113,7 +172,7 @@
 
         .table th, .table td {
             vertical-align: middle;
-            font-size: 0.95rem; /* Đồng bộ kích thước chữ trong bảng */
+            font-size: 0.95rem;
         }
 
         .btn-close {
@@ -142,16 +201,16 @@
             }
 
         .btn-sm {
-            font-size: 0.85rem; /* Đồng bộ kích thước nút */
+            font-size: 0.85rem;
             padding: 0.25rem 0.75rem;
         }
 
         .badge {
-            font-size: 0.85rem; /* Đồng bộ kích thước badge */
+            font-size: 0.85rem;
         }
 
         h2 {
-            font-size: 1.75rem; /* Đồng bộ kích thước tiêu đề */
+            font-size: 1.75rem;
             font-weight: 600;
         }
 
@@ -161,7 +220,7 @@
         }
 
         .table {
-            font-size: 0.95rem; /* Đồng bộ kích thước font trong bảng */
+            font-size: 0.95rem;
             border: 1px solid #dee2e6;
         }
 

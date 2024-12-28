@@ -8,19 +8,18 @@ namespace AdminDashboard.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = ObjectId.GenerateNewId().ToString(); // Tạo Id dạng ObjectId tự động
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("name")]
-        public string Name { get; set; } // Tên của danh mục, NOT NULL
+        public string Name { get; set; }
 
         [BsonElement("description")]
-        public string Description { get; set; } // Mô tả của danh mục
-
+        public string Description { get; set; }
         [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Ngày tạo
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonElement("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; // Ngày cập nhật cuối
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonIgnoreIfDefault]
         public int __v { get; set; }

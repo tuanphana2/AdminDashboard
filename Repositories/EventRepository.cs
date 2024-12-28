@@ -16,29 +16,25 @@ namespace AdminDashboard.Repositories
             _events = database.GetCollection<Event>("events");
         }
 
-        // Phương thức trả về bộ sưu tập Event
         public IMongoCollection<Event> GetCollection()
         {
             return _events;
         }
 
-        // Lấy tất cả các sự kiện
         public async Task<List<Event>> GetAllAsync()
         {
             return await _events.Find(_ => true).ToListAsync();
         }
 
-        // Lấy số lượng sự kiện diễn ra trong tháng hiện tại
         public async Task<int> GetEventCountThisMonthAsync()
         {
             var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1); // Cuối tháng
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
             var count = await _events.CountDocumentsAsync(e => e.Date >= startOfMonth && e.Date <= endOfMonth);
             return (int)count;
         }
 
-        // Tìm kiếm sự kiện theo từ khóa
         public async Task<List<Event>> SearchEventsAsync(string searchQuery)
         {
             if (string.IsNullOrWhiteSpace(searchQuery))
@@ -52,14 +48,12 @@ namespace AdminDashboard.Repositories
             return await _events.Find(filter).ToListAsync();
         }
 
-        // Lấy sự kiện theo Id
         public async Task<Event> GetByIdAsync(string id)
         {
             var objectId = ParseObjectId(id);
             return await _events.Find(e => e.Id == objectId.ToString()).FirstOrDefaultAsync();
         }
 
-        // Tạo sự kiện mới
         public async Task CreateAsync(Event evnt)
         {
             evnt.CreatedAt = DateTime.UtcNow;
@@ -68,7 +62,6 @@ namespace AdminDashboard.Repositories
             await _events.InsertOneAsync(evnt);
         }
 
-        // Cập nhật sự kiện theo Id
         public async Task UpdateAsync(string id, Event evnt)
         {
             var objectId = ParseObjectId(id);
@@ -77,14 +70,12 @@ namespace AdminDashboard.Repositories
             await _events.ReplaceOneAsync(e => e.Id == objectId.ToString(), evnt);
         }
 
-        // Xóa sự kiện theo Id
         public async Task DeleteAsync(string id)
         {
             var objectId = ParseObjectId(id);
             await _events.DeleteOneAsync(e => e.Id == objectId.ToString());
         }
 
-        // Hỗ trợ chuyển đổi String -> ObjectId và ném exception nếu không hợp lệ
         private ObjectId ParseObjectId(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
