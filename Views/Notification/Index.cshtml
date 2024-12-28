@@ -54,10 +54,10 @@
                 <tr>
                     <td>@notification.Title</td>
                     <td>
-                        @if (notification.Description.Length > 100)
+                        @if (notification.Description.Length > 65)
                             {
-                            <span>@notification.Description.Substring(0, 100)...</span>
-                            <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#recipientsModal-@notification.Id">
+                            <span>@notification.Description.Substring(0, 65)...</span>
+                            <button class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#descriptionModal-@notification.Id">
                                 <span class="badge bg-secondary">more</span>
                             </button>
 
