@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <div class="container mt-4">
     <h3 class="text-center">User Role Statistics</h3>
@@ -10,6 +11,7 @@
 <script>
     const attendeesCount = @(@ViewBag.AttendeesCount ?? 0);
     const organizersCount = @(@ViewBag.OrganizersCount ?? 0);
+    const totalCount = attendeesCount + organizersCount;
 
     const ctxUserRoleChart = document.getElementById('userRoleChart').getContext('2d');
     const userRoleChart = new Chart(ctxUserRoleChart, {
@@ -27,8 +29,23 @@
             plugins: {
                 legend: {
                     position: 'bottom',
+                },
+                datalabels: {
+                    formatter: (value, context) => {
+                        const percentage = totalCount > 0
+                            ? ((value / totalCount) * 100).toFixed(2)
+                            : '0.00';
+                        return `${percentage}%`;
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                    },
+                    anchor: 'end',
+                    align: 'start',
                 }
             }
-        }
+        },
+        plugins: [ChartDataLabels]
     });
 </script>
